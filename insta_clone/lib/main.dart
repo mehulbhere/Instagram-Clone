@@ -4,6 +4,7 @@ import 'package:insta_clone/responsive/mobile_screen_layout.dart';
 import 'package:insta_clone/responsive/responsive_layout_screen.dart';
 import 'package:insta_clone/responsive/web_screen_layout.dart';
 import 'package:insta_clone/screens/login_screen.dart';
+import 'package:insta_clone/screens/signup_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
 
 void main() async {
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Insta Clone',
-      theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: mobileBgColor),
+      theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: mobileBgColor, primaryColor: mobilePColor),
       // home: const ResponsiveLayout(
       //     mobileScreenLayout: MobileScreenLayout(),
       //     webScreenLayout: WebScreenLayout()),

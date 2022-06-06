@@ -1,41 +1,60 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:insta_clone/resources/auth_methods.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/utils.dart';
 import 'package:insta_clone/widgets/text_field_input.dart';
+import 'dart:typed_data';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignupScreenState createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  Uint8List? _image;
   bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passController.dispose(); // TODO: implement dispose
+    _usernameController.dispose(); // TODO: implement dispose
+    _bioController.dispose(); // TODO: implement dispose
     super.dispose();
   }
 
-  void loginUser() async {
+  void selectImage() async {
+    Uint8List image = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = image;
+    });
+  }
+
+  void signUpUser() async {
     setState(() {
       _isLoading = true;
     });
-    String res = await AuthMethod().loginUser(
-        email: _emailController.text, password: _passController.text);
+    String res = await AuthMethod().signUpUser(
+        email: _emailController.text,
+        password: _passController.text,
+        username: _usernameController.text,
+        bio: _bioController.text,
+        file: _image!);
+    print(res);
     setState(() {
       _isLoading = false;
     });
-    if (res == "success") {
-      showSnackBar("Successful Login", context);
-    } else {
+    if (res != "success") {
       showSnackBar(res, context);
     }
   }
@@ -58,7 +77,26 @@ class _LoginScreenState extends State<LoginScreen> {
               color: mobilePColor,
               height: 64,
             ),
-            SizedBox(height: 64),
+            SizedBox(height: 24),
+            Stack(
+              children: [
+                _image != null
+                    ? CircleAvatar(
+                        radius: 64, backgroundImage: MemoryImage(_image!))
+                    : CircleAvatar(
+                        radius: 64,
+                        backgroundImage: NetworkImage(
+                            "https://images.unsplash.com/photo-1654302846461-aca08433cfda?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"),
+                      ),
+                Positioned(
+                    bottom: -10,
+                    right: -10,
+                    child: IconButton(
+                        onPressed: selectImage,
+                        icon: Icon(Icons.add_a_photo_rounded)))
+              ],
+            ),
+            SizedBox(height: 24),
             TextFieldInput(
                 hintText: "Enter Email",
                 textEditingController: _emailController,
@@ -71,15 +109,25 @@ class _LoginScreenState extends State<LoginScreen> {
               isPass: true,
             ),
             SizedBox(height: 24),
+            TextFieldInput(
+                hintText: "Enter Username",
+                textEditingController: _usernameController,
+                textInputType: TextInputType.text),
+            SizedBox(height: 24),
+            TextFieldInput(
+                hintText: "Enter Bio",
+                textEditingController: _bioController,
+                textInputType: TextInputType.text),
+            SizedBox(height: 24),
             GestureDetector(
-              onTap: loginUser,
+              onTap: signUpUser,
               child: Container(
                   child: _isLoading
                       ? Center(
                           child: CircularProgressIndicator(
                           color: mobilePColor,
                         ))
-                      : Text("Login"),
+                      : Text("Sign Up"),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 10),
@@ -93,13 +141,13 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                    child: Text("Dont have an Account?"),
+                    child: Text("Already have an account? "),
                     padding: EdgeInsets.symmetric(vertical: 10)),
                 GestureDetector(
                   onTap: () {},
                   child: Container(
                       child: Text(
-                        " Sign Up",
+                        " Log In",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       padding: EdgeInsets.symmetric(vertical: 10)),
