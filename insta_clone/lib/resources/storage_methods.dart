@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 class StorageMethod {
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
@@ -16,6 +17,14 @@ class StorageMethod {
         .ref()
         .child(childName)
         .child(_firebaseAuth.currentUser!.uid);
+    print("no post"+ref.toString());
+
+    if (isPost) {
+      String id = Uuid().v1();
+      print("before" + ref.toString());
+      ref = ref.child(id);
+      print("after" + ref.toString());
+    }
     //putData: upload a file in format Uint8List
     UploadTask uploadTask = ref.putData(file);
     //snapshot: result or on-going process
