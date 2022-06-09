@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:insta_clone/screens/new_post.dart';
 
+import '../screens/feed.dart';
+
 const webScreenSize = 600;
 
 const tabs = [
-  Center(child: Text("Home")),
+  Feed(),
   Center(child: Text("Search")),
   NewPost(),
   Center(child: Text("Likes")),
