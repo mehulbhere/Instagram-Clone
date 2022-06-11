@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,12 +9,12 @@ import 'package:uuid/uuid.dart';
 class FirestoreMethod {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  Future<String> uploadPost(String caption, Uint8List file, String uid,
+  Future<String> uploadPost(String caption, File file, String uid,
       String username, String profileImage) async {
     String res = "Error";
     try {
       String photoUrl =
-          await StorageMethod().uploadImageToStorage("posts", file, true);
+          await StorageMethod().uploadFileToStorage("posts", file, true);
       String postId = const Uuid().v1();
       Post post = Post(
           caption: caption,

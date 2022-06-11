@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class NewPost extends StatefulWidget {
 }
 
 class _NewPostState extends State<NewPost> {
-  Uint8List? _file;
+  File? _file;
   TextEditingController _captionController = TextEditingController();
   bool _isLoading = false;
   void postImage(String uid, String username, String profImage) async {
@@ -58,9 +59,11 @@ class _NewPostState extends State<NewPost> {
                 child: Text("Take a photo"),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.camera);
+                  final file =
+                      await ImagePicker().pickImage(source: ImageSource.camera);
+                  File newImage = File(file!.path);
                   setState(() {
-                    _file = file;
+                    _file = newImage;
                   });
                 },
               ),
@@ -69,9 +72,12 @@ class _NewPostState extends State<NewPost> {
                 child: Text("Choose from Gallery"),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.gallery);
+                  final file = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  // File newImage = File.fromRawPath(file);
+                  File newImage = File(file!.path);
                   setState(() {
-                    _file = file;
+                    _file = newImage;
                   });
                 },
               ),
@@ -144,13 +150,7 @@ class _NewPostState extends State<NewPost> {
                         width: 45,
                         height: 45,
                         child: Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: MemoryImage(
-                                    _file!), //Uint8List image display
-                                fit: BoxFit.fill,
-                                alignment: FractionalOffset.topCenter),
-                          ),
+                          child: Image(image: FileImage(_file!)),
                         ))
                   ],
                 )

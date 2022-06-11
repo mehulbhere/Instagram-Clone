@@ -39,7 +39,7 @@ class User {
       bio: snapshot['bio'],
       followers: snapshot['followers'],
       following: snapshot['following'],
-      photoUrl: snapshot['profilePicUrl'],
+      photoUrl: snapshot['photoUrl'],
     );
   }
 }
