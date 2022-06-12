@@ -10,11 +10,17 @@ class FirestoreMethod {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   Future<String> uploadPost(String caption, File file, String uid,
-      String username, String profileImage) async {
+      String username, String profileImage, bool isVideo) async {
     String res = "Error";
     try {
-      String photoUrl =
-          await StorageMethod().uploadFileToStorage("posts", file, true);
+      String photoUrl;
+      if (isVideo) {
+        photoUrl =
+            await StorageMethod().uploadVideoToStorage("posts", file, true);
+      } else {
+        photoUrl =
+            await StorageMethod().uploadFileToStorage("posts", file, true);
+      }
       String postId = const Uuid().v1();
       Post post = Post(
           caption: caption,
@@ -25,7 +31,8 @@ class FirestoreMethod {
           postUrl: photoUrl,
           profImage: profileImage,
           likes: [],
-          comments: []);
+          comments: [],
+          isVideo: isVideo);
 
       _firebaseFirestore.collection("posts").doc(postId).set(post.toJson());
       res = "success";
@@ -36,14 +43,15 @@ class FirestoreMethod {
     }
   }
 
-  Future<void> likedPost(String postId, String uid, List likes) async {
+  Future<void> likedPost(String postId, String uid, List likes, bool isAnimated) async {
     try {
-      if (likes.contains(uid)) {
+      if (likes.contains(uid) && !isAnimated) {
         //remove our uid from the list
         await _firebaseFirestore.collection("posts").doc(postId).update({
           "likes": FieldValue.arrayRemove([uid])
         });
-      } else {
+      } 
+      else {
         await _firebaseFirestore.collection("posts").doc(postId).update({
           "likes": FieldValue.arrayUnion([uid])
         });

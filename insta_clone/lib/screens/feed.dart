@@ -6,8 +6,16 @@ import 'package:insta_clone/widgets/postCard.dart';
 
 import '../models/post.dart';
 
-class Feed extends StatelessWidget {
+class Feed extends StatefulWidget {
   const Feed({Key? key}) : super(key: key);
+
+  @override
+  State<Feed> createState() => _FeedState();
+}
+
+class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +47,8 @@ class Feed extends StatelessWidget {
           }
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) => PostCard(
-              snap: snapshot.data!.docs[index].data()
-            ),
+            itemBuilder: (context, index) =>
+                PostCard(snap: snapshot.data!.docs[index].data()),
           );
         },
       ),

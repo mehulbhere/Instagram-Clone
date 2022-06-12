@@ -1,8 +1,8 @@
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_clone/providers/user_provider.dart';
 import 'package:insta_clone/resources/firestore_methods.dart';
 import 'package:insta_clone/utils/colors.dart';
-import 'package:insta_clone/utils/global_var.dart';
 import 'package:insta_clone/widgets/likeAnimation.dart';
 import 'package:intl/intl.dart';
 import 'package:insta_clone/models/user.dart' as model;
@@ -18,11 +18,33 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
+  late CachedVideoPlayerController _videoController;
+
+  @override
+  void initState() {
+    super.initState();
+    _videoController = CachedVideoPlayerController.network(
+      widget.snap['postUrl'],
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    );
+
+    _videoController.addListener(() {
+      setState(() {});
+    });
+    _videoController.setLooping(true);
+    _videoController.initialize();
+    _videoController.play();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _videoController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final model.User user = Provider.of<UserProvider>(context).getUser;
-
     return Container(
       color: mobileBgColor,
       padding: EdgeInsets.symmetric(vertical: 10),
@@ -51,7 +73,7 @@ class _PostCardState extends State<PostCard> {
         GestureDetector(
           onDoubleTap: () async {
             await FirestoreMethod().likedPost(
-                widget.snap['postId'], user.uid, widget.snap['likes']);
+                widget.snap['postId'], user.uid, widget.snap['likes'], true);
             setState(() {
               isLikeAnimating = true;
             });
@@ -60,7 +82,11 @@ class _PostCardState extends State<PostCard> {
             SizedBox(
                 // height: MediaQuery.of(context).size.height * 0.3,
                 width: double.infinity,
-                child: Image.network(widget.snap['postUrl'])),
+                child: widget.snap['isVideo']
+                    ? AspectRatio(
+                        aspectRatio: _videoController.value.aspectRatio,
+                        child: CachedVideoPlayer(_videoController))
+                    : Image.network(widget.snap['postUrl'])),
             AnimatedOpacity(
               duration: Duration(milliseconds: 200),
               opacity: isLikeAnimating ? 1 : 0,
@@ -68,7 +94,7 @@ class _PostCardState extends State<PostCard> {
                 child: Icon(
                   Icons.favorite_rounded,
                   color: Color(0xffffffff),
-                  size: 200,
+                  size: 100,
                 ),
                 isAnimating: isLikeAnimating,
                 duration: Duration(milliseconds: 400),
@@ -99,8 +125,8 @@ class _PostCardState extends State<PostCard> {
                         )
                       : Icon(Icons.favorite_border),
                   onPressed: () async {
-                    await FirestoreMethod().likedPost(
-                        widget.snap['postId'], user.uid, widget.snap['likes']);
+                    await FirestoreMethod().likedPost(widget.snap['postId'],
+                        user.uid, widget.snap['likes'], false);
                   },
                 ),
               ),

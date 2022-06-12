@@ -10,6 +10,7 @@ import 'package:insta_clone/utils/global_var.dart';
 import 'package:insta_clone/utils/utils.dart';
 import 'package:insta_clone/models/user.dart' as model;
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as p;
 
 class NewPost extends StatefulWidget {
   const NewPost({Key? key}) : super(key: key);
@@ -20,6 +21,7 @@ class NewPost extends StatefulWidget {
 
 class _NewPostState extends State<NewPost> {
   File? _file;
+  bool isVideo = false;
   TextEditingController _captionController = TextEditingController();
   bool _isLoading = false;
   void postImage(String uid, String username, String profImage) async {
@@ -28,7 +30,7 @@ class _NewPostState extends State<NewPost> {
     });
     try {
       String res = await FirestoreMethod().uploadPost(
-          _captionController.text, _file!, uid, username, profImage);
+          _captionController.text, _file!, uid, username, profImage, isVideo);
       if (res == "sucess") {
         setState(() {
           _isLoading = false;
@@ -75,8 +77,30 @@ class _NewPostState extends State<NewPost> {
                   final file = await ImagePicker()
                       .pickImage(source: ImageSource.gallery);
                   // File newImage = File.fromRawPath(file);
+
                   File newImage = File(file!.path);
+                  final type = (p.extension(newImage.path));
+                  print(type);
                   setState(() {
+                    isVideo = false;
+                    _file = newImage;
+                  });
+                },
+              ),
+              SimpleDialogOption(
+                padding: EdgeInsets.all(20),
+                child: Text("Choose Video from Gallery"),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  final file = await ImagePicker()
+                      .pickVideo(source: ImageSource.gallery);
+                  // File newImage = File.fromRawPath(file);
+
+                  File newImage = File(file!.path);
+                  final type = (p.extension(newImage.path));
+                  print(type);
+                  setState(() {
+                    isVideo = true;
                     _file = newImage;
                   });
                 },
@@ -150,7 +174,9 @@ class _NewPostState extends State<NewPost> {
                         width: 45,
                         height: 45,
                         child: Container(
-                          child: Image(image: FileImage(_file!)),
+                          child: isVideo
+                              ? Text("video")
+                              : Image(image: FileImage(_file!)),
                         ))
                   ],
                 )

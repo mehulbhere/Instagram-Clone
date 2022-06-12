@@ -18,7 +18,7 @@ class StorageMethod {
         .ref()
         .child(childName)
         .child(_firebaseAuth.currentUser!.uid);
-    print("no post"+ref.toString());
+    print("no post" + ref.toString());
 
     if (isPost) {
       String id = Uuid().v1();
@@ -34,6 +34,7 @@ class StorageMethod {
     String downloadUrl = await snap.ref.getDownloadURL();
     return downloadUrl;
   }
+
   Future<String> uploadFileToStorage(
       String childName, File file, bool isPost) async {
     //ref : path or pointer to the file
@@ -44,7 +45,7 @@ class StorageMethod {
         .ref()
         .child(childName)
         .child(_firebaseAuth.currentUser!.uid);
-    print("no post"+ref.toString());
+    print("no post" + ref.toString());
 
     if (isPost) {
       String id = Uuid().v1();
@@ -54,6 +55,34 @@ class StorageMethod {
     }
     //putData: upload a file in format Uint8List
     UploadTask uploadTask = ref.putFile(file);
+    //snapshot: result or on-going process
+    TaskSnapshot snap = await uploadTask;
+    //get the URL of the location of file
+    String downloadUrl = await snap.ref.getDownloadURL();
+    return downloadUrl;
+  }
+
+  Future<String> uploadVideoToStorage(
+      String childName, File file, bool isPost) async {
+    //ref : path or pointer to the file
+    //child: relative path
+    //childName: folder name - Eg.Profile Pics
+
+    Reference ref = _firebaseStorage
+        .ref()
+        .child(childName)
+        .child(_firebaseAuth.currentUser!.uid);
+    print("no post" + ref.toString());
+
+    if (isPost) {
+      String id = Uuid().v1();
+      print("before" + ref.toString());
+      ref = ref.child(id);
+      print("after" + ref.toString());
+    }
+    //putData: upload a file in format Uint8List
+    UploadTask uploadTask =
+        ref.putFile(file, SettableMetadata(contentType: "video/mp4"));
     //snapshot: result or on-going process
     TaskSnapshot snap = await uploadTask;
     //get the URL of the location of file
