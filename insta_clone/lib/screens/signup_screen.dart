@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -99,7 +100,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         radius: 64, backgroundImage: MemoryImage(_image!))
                     : CircleAvatar(
                         radius: 64,
-                        backgroundImage: NetworkImage(
+                        child: CachedNetworkImage(imageUrl:
                             "https://images.unsplash.com/photo-1654302846461-aca08433cfda?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"),
                       ),
                 Positioned(

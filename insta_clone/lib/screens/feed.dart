@@ -16,6 +16,30 @@ class Feed extends StatefulWidget {
 class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => false;
+  final FirebaseFirestore db = FirebaseFirestore.instance;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  //caching
+  Stream<QuerySnapshot<Map<String, dynamic>>> getStream() {
+    db.settings = Settings(persistenceEnabled: true);
+    Stream<QuerySnapshot<Map<String, dynamic>>> stream =
+        db.collection("posts").snapshots(includeMetadataChanges: true);
+    db
+        .collection("posts")
+        .snapshots(includeMetadataChanges: true)
+        .listen((event) {
+      for (var change in event.docChanges) {
+        if (change.type == DocumentChangeType.added) {
+          print("local storage");
+        }
+      }
+    });
+    return stream;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +63,7 @@ class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
         ],
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("posts").snapshots(),
+        stream: getStream(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

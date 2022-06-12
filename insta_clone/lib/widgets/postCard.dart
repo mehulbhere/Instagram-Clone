@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_clone/providers/user_provider.dart';
@@ -55,7 +56,10 @@ class _PostCardState extends State<PostCard> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage: NetworkImage(widget.snap['profImage']),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child:
+                        CachedNetworkImage(imageUrl: widget.snap['profImage'])),
               ),
               Expanded(
                 child: Padding(
@@ -86,7 +90,9 @@ class _PostCardState extends State<PostCard> {
                     ? AspectRatio(
                         aspectRatio: _videoController.value.aspectRatio,
                         child: CachedVideoPlayer(_videoController))
-                    : Image.network(widget.snap['postUrl'])),
+                    : CachedNetworkImage(
+                        imageUrl: widget.snap['postUrl'],
+                      )),
             AnimatedOpacity(
               duration: Duration(milliseconds: 200),
               opacity: isLikeAnimating ? 1 : 0,
