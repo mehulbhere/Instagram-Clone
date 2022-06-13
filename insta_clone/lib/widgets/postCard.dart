@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cached_video_player/cached_video_player.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:insta_clone/providers/user_provider.dart';
 import 'package:insta_clone/resources/firestore_methods.dart';
 import 'package:insta_clone/utils/colors.dart';
@@ -8,6 +9,7 @@ import 'package:insta_clone/widgets/likeAnimation.dart';
 import 'package:intl/intl.dart';
 import 'package:insta_clone/models/user.dart' as model;
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 class PostCard extends StatefulWidget {
   final snap;
@@ -19,22 +21,50 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
-  late CachedVideoPlayerController _videoController;
+  late VideoPlayerController _videoController;
+  late ChewieController _chewieController;
+
+  void getVideoFromCache() async {
+    final file =
+        await DefaultCacheManager().getFileFromCache(widget.snap['postUrl']);
+    if (file == null || file.file == null) {
+      print("not in cache");
+      DefaultCacheManager().downloadFile(widget.snap['postUrl']);
+      setState(() {
+        _videoController =
+            VideoPlayerController.network(widget.snap['postUrl']);
+      });
+    } else {
+      print("already in cache");
+      setState(() {
+        _videoController = VideoPlayerController.file(file.file);
+      });
+    }
+    print(_videoController.dataSourceType);
+    setState(() {
+      _chewieController = ChewieController(
+        videoPlayerController: _videoController,
+      );
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    _videoController = CachedVideoPlayerController.network(
-      widget.snap['postUrl'],
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    );
 
-    _videoController.addListener(() {
-      setState(() {});
-    });
-    _videoController.setLooping(true);
-    _videoController.initialize();
-    _videoController.play();
+    // _videoController = VideoPlayerController.network(
+    //   widget.snap['postUrl'],
+    //   videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    // );
+    if (widget.snap['isVideo']) {
+      getVideoFromCache();
+    }
+    // _videoController.addListener(() {
+    //   setState(() {});
+    // });
+    // _videoController.setLooping(true);
+    // _videoController.initialize();
+    // _videoController.play();
   }
 
   @override
@@ -89,7 +119,7 @@ class _PostCardState extends State<PostCard> {
                 child: widget.snap['isVideo']
                     ? AspectRatio(
                         aspectRatio: _videoController.value.aspectRatio,
-                        child: CachedVideoPlayer(_videoController))
+                        child: Chewie(controller: _chewieController))
                     : CachedNetworkImage(
                         imageUrl: widget.snap['postUrl'],
                       )),

@@ -25,6 +25,7 @@ class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
 
   //caching
   Stream<QuerySnapshot<Map<String, dynamic>>> getStream() {
+    print("Fecthing..............................");
     db.settings = Settings(persistenceEnabled: true);
     Stream<QuerySnapshot<Map<String, dynamic>>> stream =
         db.collection("posts").snapshots(includeMetadataChanges: true);
