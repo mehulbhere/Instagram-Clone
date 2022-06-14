@@ -1,10 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:insta_clone/providers/user_provider.dart';
 import 'package:insta_clone/resources/firestore_methods.dart';
+import 'package:insta_clone/screens/comment_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
+import 'package:insta_clone/utils/utils.dart';
+import 'package:insta_clone/widgets/displayVideo.dart';
 import 'package:insta_clone/widgets/likeAnimation.dart';
 import 'package:intl/intl.dart';
 import 'package:insta_clone/models/user.dart' as model;
@@ -21,56 +25,29 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
-  late VideoPlayerController _videoController;
-  late ChewieController _chewieController;
+  int commentsCount = 1;
 
-  void getVideoFromCache() async {
-    final file =
-        await DefaultCacheManager().getFileFromCache(widget.snap['postUrl']);
-    if (file == null || file.file == null) {
-      print("not in cache");
-      DefaultCacheManager().downloadFile(widget.snap['postUrl']);
+  void getCommentCount() async {
+    try {
+      QuerySnapshot commentSnap = await FirebaseFirestore.instance
+          .collection("posts")
+          .doc(widget.snap['postId'])
+          .collection('comments')
+          .get();
       setState(() {
-        _videoController =
-            VideoPlayerController.network(widget.snap['postUrl']);
+        commentsCount = commentSnap.docs.length;
       });
-    } else {
-      print("already in cache");
-      setState(() {
-        _videoController = VideoPlayerController.file(file.file);
-      });
+      print("got comment count");
+    } catch (err) {
+      print(err.toString());
     }
-    print(_videoController.dataSourceType);
-    setState(() {
-      _chewieController = ChewieController(
-        videoPlayerController: _videoController,
-      );
-    });
   }
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-
-    // _videoController = VideoPlayerController.network(
-    //   widget.snap['postUrl'],
-    //   videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    // );
-    if (widget.snap['isVideo']) {
-      getVideoFromCache();
-    }
-    // _videoController.addListener(() {
-    //   setState(() {});
-    // });
-    // _videoController.setLooping(true);
-    // _videoController.initialize();
-    // _videoController.play();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _videoController.dispose();
+    getCommentCount();
   }
 
   @override
@@ -100,7 +77,28 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
               ),
-              IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+              IconButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return (SimpleDialog(
+                            children: [
+                              SimpleDialogOption(
+                                child: Text("Delete Post"),
+                                onPressed: () async {
+                                  FirestoreMethod()
+                                      .deletePost(widget.snap['postId']);
+                                  Navigator.of(context).pop();
+                                  showSnackBar(
+                                      "Post Deleted Successfully", context);
+                                },
+                              )
+                            ],
+                          ));
+                        });
+                  },
+                  icon: Icon(Icons.more_vert)),
             ],
           ),
         ),
@@ -117,9 +115,7 @@ class _PostCardState extends State<PostCard> {
                 // height: MediaQuery.of(context).size.height * 0.3,
                 width: double.infinity,
                 child: widget.snap['isVideo']
-                    ? AspectRatio(
-                        aspectRatio: _videoController.value.aspectRatio,
-                        child: Chewie(controller: _chewieController))
+                    ? DisplayVideo(snap: widget.snap)
                     : CachedNetworkImage(
                         imageUrl: widget.snap['postUrl'],
                       )),
@@ -163,12 +159,14 @@ class _PostCardState extends State<PostCard> {
                   onPressed: () async {
                     await FirestoreMethod().likedPost(widget.snap['postId'],
                         user.uid, widget.snap['likes'], false);
+                    showSnackBar("Liked", context);
                   },
                 ),
               ),
               IconButton(
                 icon: Icon(Icons.mode_comment_outlined),
-                onPressed: () {},
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CommentScreen(snap: widget.snap))),
               ),
               IconButton(
                 icon: Icon(Icons.ios_share_rounded),
@@ -207,8 +205,7 @@ class _PostCardState extends State<PostCard> {
                                   size: 15,
                                 ),
                                 Text(
-                                  widget.snap['comments'].length.toString() +
-                                      " comments",
+                                  commentsCount.toString() + " comments",
                                   style: TextStyle(fontSize: 12),
                                 ),
                               ],
