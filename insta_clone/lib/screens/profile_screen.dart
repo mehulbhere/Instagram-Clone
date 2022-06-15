@@ -3,6 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:insta_clone/resources/auth_methods.dart';
+import 'package:insta_clone/resources/firestore_methods.dart';
+import 'package:insta_clone/screens/login_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/global_var.dart';
 import 'package:insta_clone/utils/utils.dart';
@@ -124,14 +127,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         currentUser == widget.uid
                             ? FollowButton(
+                                function: () async {
+                                  await AuthMethod().signOut();
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) => LoginScreen()));
+                                },
                                 bColor: mobileAColor,
                                 bgColor: mobileAColor,
-                                text: "Edit Profile",
+                                text: "Sign Out",
                                 textColor: mobilePColor,
-                                width: MediaQuery.of(context).size.width * 0.75,
+                                width: MediaQuery.of(context).size.width * 0.4,
                               )
                             : isFollowing
                                 ? FollowButton(
+                                    function: () async {
+                                      await FirestoreMethod()
+                                          .follow(currentUser, widget.uid);
+                                      setState(() {
+                                        isFollowing = false;
+                                        followersCount--;
+                                      });
+                                    },
                                     bColor: mobileAColor,
                                     bgColor: mobileAColor,
                                     text: "Unfollow",
@@ -143,6 +160,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     bColor: blueColor,
                                     bgColor: blueColor,
                                     text: "Follow",
+                                    function: () async {
+                                      await FirestoreMethod()
+                                          .follow(currentUser, widget.uid);
+                                      setState(() {
+                                        isFollowing = true;
+                                        followersCount++;
+                                      });
+                                    },
                                     textColor: mobilePColor,
                                     width: MediaQuery.of(context).size.width *
                                         0.75,

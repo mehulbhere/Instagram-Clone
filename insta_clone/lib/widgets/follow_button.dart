@@ -22,7 +22,7 @@ class FollowButton extends StatelessWidget {
     return Expanded(
       child: Container(
         child: TextButton(
-          onPressed: () {},
+          onPressed: function,
           child: Container(
             alignment: Alignment.center,
             height: 25,
