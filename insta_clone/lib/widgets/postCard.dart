@@ -8,6 +8,7 @@ import 'package:insta_clone/resources/firestore_methods.dart';
 import 'package:insta_clone/screens/comment_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/utils.dart';
+import 'package:insta_clone/widgets/displayImage.dart';
 import 'package:insta_clone/widgets/displayVideo.dart';
 import 'package:insta_clone/widgets/likeAnimation.dart';
 import 'package:intl/intl.dart';
@@ -65,8 +66,7 @@ class _PostCardState extends State<PostCard> {
                 radius: 20,
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
-                    child:
-                        CachedNetworkImage(imageUrl: widget.snap['profImage'])),
+                    child: DisplayImage(url: widget.snap['profImage'])),
               ),
               Expanded(
                 child: Padding(
@@ -112,13 +112,12 @@ class _PostCardState extends State<PostCard> {
           },
           child: Stack(alignment: Alignment.center, children: [
             SizedBox(
-                // height: MediaQuery.of(context).size.height * 0.3,
-                width: double.infinity,
-                child: widget.snap['isVideo']
-                    ? DisplayVideo(snap: widget.snap)
-                    : CachedNetworkImage(
-                        imageUrl: widget.snap['postUrl'],
-                      )),
+              // height: MediaQuery.of(context).size.height * 0.3,
+              width: double.infinity,
+              child: widget.snap['isVideo']
+                  ? DisplayVideo(snap: widget.snap)
+                  : DisplayImage(url: widget.snap['postUrl']),
+            ),
             AnimatedOpacity(
               duration: Duration(milliseconds: 200),
               opacity: isLikeAnimating ? 1 : 0,

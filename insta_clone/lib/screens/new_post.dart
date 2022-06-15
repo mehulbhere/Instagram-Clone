@@ -10,6 +10,7 @@ import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/global_var.dart';
 import 'package:insta_clone/utils/utils.dart';
 import 'package:insta_clone/models/user.dart' as model;
+import 'package:insta_clone/widgets/displayImage.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -158,7 +159,7 @@ class _NewPostState extends State<NewPost> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
-                      child: CachedNetworkImage(imageUrl: user.photoUrl),
+                      child:DisplayImage(url: user.photoUrl),
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.5,

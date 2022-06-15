@@ -15,7 +15,7 @@ class Feed extends StatefulWidget {
 
 class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
   final FirebaseFirestore db = FirebaseFirestore.instance;
   @override
   void initState() {
@@ -63,19 +63,24 @@ class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
           )
         ],
       ),
-      body: StreamBuilder(
-        stream: getStream(),
-        builder: (context,
-            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) =>
-                PostCard(snap: snapshot.data!.docs[index].data()),
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {});
         },
+        child: StreamBuilder(
+          stream: getStream(),
+          builder: (context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) =>
+                  PostCard(snap: snapshot.data!.docs[index].data()),
+            );
+          },
+        ),
       ),
     );
   }

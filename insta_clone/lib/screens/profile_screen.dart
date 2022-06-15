@@ -6,9 +6,11 @@ import 'package:flutter/rendering.dart';
 import 'package:insta_clone/resources/auth_methods.dart';
 import 'package:insta_clone/resources/firestore_methods.dart';
 import 'package:insta_clone/screens/login_screen.dart';
+import 'package:insta_clone/screens/post_card_view.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/global_var.dart';
 import 'package:insta_clone/utils/utils.dart';
+import 'package:insta_clone/widgets/displayImage.dart';
 import 'package:insta_clone/widgets/follow_button.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -200,10 +202,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisSpacing: 5,
                             mainAxisSpacing: 5,
                           ),
-                          itemBuilder: (context, index) => CachedNetworkImage(
-                              fit: BoxFit.cover,
-                              imageUrl: (snapshot.data! as dynamic).docs[index]
-                                  ['postUrl']));
+                          itemBuilder: (context, index) => GestureDetector(
+                                onTap: () => Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                        builder: (context) => PostCardView(
+                                              snap: (snapshot.data! as dynamic)
+                                                  .docs[index],
+                                              title: "Posts",
+                                            ))),
+                                child: DisplayImage(
+                                    url: (snapshot.data! as dynamic).docs[index]
+                                        ['postUrl']),
+                              ));
                     }
                   },
                 )
