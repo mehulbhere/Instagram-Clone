@@ -14,7 +14,12 @@ class MobileScreenLayout extends StatefulWidget {
   State<MobileScreenLayout> createState() => _MobileScreenLayoutState();
 }
 
-class _MobileScreenLayoutState extends State<MobileScreenLayout> {
+class _MobileScreenLayoutState extends State<MobileScreenLayout> with AutomaticKeepAliveClientMixin{
+
+  //To avoid pages to reload on tab switch
+  @override
+  bool get wantKeepAlive => true;
+
   String _username = "";
   late PageController pageController;
   @override

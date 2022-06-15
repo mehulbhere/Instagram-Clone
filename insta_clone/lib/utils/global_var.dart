@@ -1,14 +1,20 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_clone/screens/new_post.dart';
+import 'package:insta_clone/screens/notification_screen.dart';
+import 'package:insta_clone/screens/profile_screen.dart';
+import 'package:insta_clone/screens/search_screen.dart';
+
+import '../screens/feed.dart';
 
 const webScreenSize = 600;
-
-const tabs = [
-  Center(child: Text("Home")),
-  Center(child: Text("Search")),
+String uid = FirebaseAuth.instance.currentUser!.uid;
+final tabs = [
+  Feed(),
+  SearchScreen(),
   NewPost(),
-  Center(child: Text("Likes")),
-  Center(child: Text("Profile")),
+  ActivityScreen(),
+  ProfileScreen(uid: uid),
 ];
 
 const sampleImage =

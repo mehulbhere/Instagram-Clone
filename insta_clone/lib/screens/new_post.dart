@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_clone/providers/user_provider.dart';
@@ -8,7 +10,9 @@ import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/global_var.dart';
 import 'package:insta_clone/utils/utils.dart';
 import 'package:insta_clone/models/user.dart' as model;
+import 'package:insta_clone/widgets/displayImage.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as p;
 
 class NewPost extends StatefulWidget {
   const NewPost({Key? key}) : super(key: key);
@@ -18,7 +22,8 @@ class NewPost extends StatefulWidget {
 }
 
 class _NewPostState extends State<NewPost> {
-  Uint8List? _file;
+  File? _file;
+  bool isVideo = false;
   TextEditingController _captionController = TextEditingController();
   bool _isLoading = false;
   void postImage(String uid, String username, String profImage) async {
@@ -27,7 +32,7 @@ class _NewPostState extends State<NewPost> {
     });
     try {
       String res = await FirestoreMethod().uploadPost(
-          _captionController.text, _file!, uid, username, profImage);
+          _captionController.text, _file!, uid, username, profImage, isVideo);
       if (res == "sucess") {
         setState(() {
           _isLoading = false;
@@ -58,9 +63,11 @@ class _NewPostState extends State<NewPost> {
                 child: Text("Take a photo"),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.camera);
+                  final file =
+                      await ImagePicker().pickImage(source: ImageSource.camera);
+                  File newImage = File(file!.path);
                   setState(() {
-                    _file = file;
+                    _file = newImage;
                   });
                 },
               ),
@@ -69,9 +76,34 @@ class _NewPostState extends State<NewPost> {
                 child: Text("Choose from Gallery"),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.gallery);
+                  final file = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  // File newImage = File.fromRawPath(file);
+
+                  File newImage = File(file!.path);
+                  final type = (p.extension(newImage.path));
+                  print(type);
                   setState(() {
-                    _file = file;
+                    isVideo = false;
+                    _file = newImage;
+                  });
+                },
+              ),
+              SimpleDialogOption(
+                padding: EdgeInsets.all(20),
+                child: Text("Choose Video from Gallery"),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  final file = await ImagePicker()
+                      .pickVideo(source: ImageSource.gallery);
+                  // File newImage = File.fromRawPath(file);
+
+                  File newImage = File(file!.path);
+                  final type = (p.extension(newImage.path));
+                  print(type);
+                  setState(() {
+                    isVideo = true;
+                    _file = newImage;
                   });
                 },
               ),
@@ -127,7 +159,7 @@ class _NewPostState extends State<NewPost> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
-                      backgroundImage: NetworkImage(user.photoUrl),
+                      child:DisplayImage(url: user.photoUrl),
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.5,
@@ -144,13 +176,9 @@ class _NewPostState extends State<NewPost> {
                         width: 45,
                         height: 45,
                         child: Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: MemoryImage(
-                                    _file!), //Uint8List image display
-                                fit: BoxFit.fill,
-                                alignment: FractionalOffset.topCenter),
-                          ),
+                          child: isVideo
+                              ? Text("video")
+                              : Image(image: FileImage(_file!)),
                         ))
                   ],
                 )
