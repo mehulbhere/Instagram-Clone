@@ -4,6 +4,7 @@ import 'package:insta_clone/resources/auth_methods.dart';
 import 'package:insta_clone/screens/signup_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/utils.dart';
+import 'package:insta_clone/widgets/customProgess.dart';
 import 'package:insta_clone/widgets/text_field_input.dart';
 
 import '../responsive/mobile_screen_layout.dart';
@@ -91,9 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Container(
                   child: _isLoading
                       ? Center(
-                          child: CircularProgressIndicator(
-                          color: mobilePColor,
-                        ))
+                          child:CustomProgess())
                       : Text("Login"),
                   width: double.infinity,
                   alignment: Alignment.center,

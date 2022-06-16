@@ -25,11 +25,11 @@ class FollowButton extends StatelessWidget {
           onPressed: function,
           child: Container(
             alignment: Alignment.center,
-            height: 25,
+            height: 30,
             decoration: BoxDecoration(
                 color: bgColor,
                 border: Border.all(color: bColor),
-                borderRadius: BorderRadius.circular(5)),
+                borderRadius: BorderRadius.circular(8)),
             child: Text(
               text,
               style: TextStyle(color: textColor),

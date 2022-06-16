@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:insta_clone/resources/auth_methods.dart';
@@ -10,6 +11,7 @@ import 'package:insta_clone/screens/post_card_view.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/global_var.dart';
 import 'package:insta_clone/utils/utils.dart';
+import 'package:insta_clone/widgets/customProgess.dart';
 import 'package:insta_clone/widgets/displayImage.dart';
 import 'package:insta_clone/widgets/follow_button.dart';
 
@@ -70,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return isLoading
         ? Center(
-            child: CircularProgressIndicator(),
+            child: CustomProgess(),
           )
         : Scaffold(
             appBar: AppBar(
@@ -135,8 +137,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       MaterialPageRoute(
                                           builder: (context) => LoginScreen()));
                                 },
-                                bColor: mobileAColor,
-                                bgColor: mobileAColor,
+                                bColor: mobileSecondaryColor,
+                                bgColor: mobileSecondaryColor,
                                 text: "Sign Out",
                                 textColor: mobilePColor,
                                 width: MediaQuery.of(context).size.width * 0.4,
@@ -151,8 +153,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         followersCount--;
                                       });
                                     },
-                                    bColor: mobileAColor,
-                                    bgColor: mobileAColor,
+                                    bColor: mobileSecondaryColor,
+                                    bgColor: mobileSecondaryColor,
                                     text: "Unfollow",
                                     textColor: mobilePColor,
                                     width: MediaQuery.of(context).size.width *
@@ -178,7 +180,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     )
                   ]),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      alignment: Alignment.center,
+                      onPressed: () {},
+                      icon: Icon(Icons.grid_on_rounded),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.bookmark,
+                        color: mobileAColor,
+                      ),
+                    )
+                  ],
+                ),
                 Divider(
+                  height: 10,
                   color: mobilePColor,
                 ),
                 FutureBuilder(
@@ -188,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       .get(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
-                      return Center(child: CircularProgressIndicator());
+                      return Center(child:CustomProgess());
                     } else {
                       return GridView.builder(
                           scrollDirection: Axis.vertical,

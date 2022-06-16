@@ -7,6 +7,8 @@ import 'package:insta_clone/responsive/web_screen_layout.dart';
 import 'package:insta_clone/screens/login_screen.dart';
 import 'package:insta_clone/screens/signup_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
+import 'package:insta_clone/utils/utils.dart';
+import 'package:insta_clone/widgets/customProgess.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/user_provider.dart';
@@ -46,7 +48,7 @@ class MyApp extends StatelessWidget {
             // connection still processing
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
-                child: CircularProgressIndicator(color: Colors.white),
+                child: CustomProgess(),
               );
             }
             return const LoginScreen();

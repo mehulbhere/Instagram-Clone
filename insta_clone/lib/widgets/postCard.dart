@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:insta_clone/providers/user_provider.dart';
@@ -56,7 +57,7 @@ class _PostCardState extends State<PostCard> {
     final model.User user = Provider.of<UserProvider>(context).getUser;
     return Container(
       color: mobileBgColor,
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.only(bottom: 20),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
           padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -163,12 +164,12 @@ class _PostCardState extends State<PostCard> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.mode_comment_outlined),
+                icon: Icon(CupertinoIcons.chat_bubble),
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => CommentScreen(snap: widget.snap))),
               ),
               IconButton(
-                icon: Icon(Icons.ios_share_rounded),
+                icon: Icon(CupertinoIcons.paperplane),
                 onPressed: () {},
               ),
               IconButton(
@@ -190,8 +191,7 @@ class _PostCardState extends State<PostCard> {
                                   size: 15,
                                 ),
                                 Text(
-                                  widget.snap['likes'].length.toString() +
-                                      " likes",
+                                  " ${widget.snap['likes'].length} likes",
                                   style: TextStyle(fontSize: 12),
                                 ),
                               ],
@@ -200,11 +200,11 @@ class _PostCardState extends State<PostCard> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Icon(
-                                  Icons.mode_comment,
+                                  CupertinoIcons.chat_bubble,
                                   size: 15,
                                 ),
                                 Text(
-                                  commentsCount.toString() + " comments",
+                                  " ${commentsCount} comments",
                                   style: TextStyle(fontSize: 12),
                                 ),
                               ],
@@ -237,6 +237,9 @@ class _PostCardState extends State<PostCard> {
             DateFormat.yMMMd().format(widget.snap['dateOfPublish'].toDate()),
             style: TextStyle(fontWeight: FontWeight.w400, color: mobileAColor),
           ),
+        ),
+        Divider(
+          color: mobileAColor,
         )
       ]),
     );

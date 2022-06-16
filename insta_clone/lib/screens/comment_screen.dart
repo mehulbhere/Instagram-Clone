@@ -6,6 +6,7 @@ import 'package:insta_clone/resources/firestore_methods.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/global_var.dart';
 import 'package:insta_clone/widgets/comment_card.dart';
+import 'package:insta_clone/widgets/customProgess.dart';
 import 'package:insta_clone/widgets/text_field_input.dart';
 import 'package:provider/provider.dart';
 
@@ -61,7 +62,7 @@ class _CommentScreenState extends State<CommentScreen> {
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CustomProgess());
           }
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,

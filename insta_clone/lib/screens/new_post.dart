@@ -56,6 +56,9 @@ class _NewPostState extends State<NewPost> {
         context: context,
         builder: (context) {
           return SimpleDialog(
+            backgroundColor: mobileSecondaryColor,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Text("Create New Post"),
             children: [
               SimpleDialogOption(
@@ -125,11 +128,25 @@ class _NewPostState extends State<NewPost> {
 
     return _file == null
         ? Center(
-            child: IconButton(
-              icon: Icon(Icons.add_box_outlined),
-              onPressed: () => _selectImage(context),
+            child: GestureDetector(
+            onTap: () => _selectImage(context),
+            child: Container(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_box_outlined),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "New post",
+                      style: TextStyle(color: blueColor),
+                    ),
+                  )
+                ],
+              ),
             ),
-          )
+          ))
         : Scaffold(
             appBar: AppBar(
                 backgroundColor: mobileBgColor,
@@ -159,7 +176,7 @@ class _NewPostState extends State<NewPost> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
-                      child:DisplayImage(url: user.photoUrl),
+                      child: DisplayImage(url: user.photoUrl),
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.5,

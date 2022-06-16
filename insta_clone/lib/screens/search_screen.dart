@@ -5,6 +5,7 @@ import 'package:insta_clone/screens/post_card_view.dart';
 import 'package:insta_clone/screens/profile_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/global_var.dart';
+import 'package:insta_clone/widgets/customProgess.dart';
 import 'package:insta_clone/widgets/displayImage.dart';
 
 import '../widgets/postCard.dart';
@@ -34,14 +35,29 @@ class _SearchScreenState extends State<SearchScreen>
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBgColor,
-        title: TextFormField(
-          controller: _searchController,
-          decoration: InputDecoration(hintText: "Search for username"),
-          onFieldSubmitted: (String _) {
-            setState(() {
-              isSearch = true;
-            });
-          },
+        title: Container(
+          alignment: Alignment.center,
+          height: 40,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: mobileSecondaryColor),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: TextFormField(
+              cursorColor: mobilePColor,
+              cursorWidth: 1,
+              textAlignVertical: TextAlignVertical.center,
+              controller: _searchController,
+              decoration: InputDecoration(
+                  hintText: "Search for username",
+                  border: InputBorder.none),
+              onFieldSubmitted: (String _) {
+                setState(() {
+                  isSearch = true;
+                });
+              },
+            ),
+          ),
         ),
       ),
       body: isSearch
@@ -54,7 +70,7 @@ class _SearchScreenState extends State<SearchScreen>
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(
-                    child: CircularProgressIndicator(),
+                    child:CustomProgess(),
                   );
                 } else {
                   return ListView.builder(
@@ -88,6 +104,9 @@ class _SearchScreenState extends State<SearchScreen>
               },
             )
           : RefreshIndicator(
+             backgroundColor: mobileSecondaryColor,
+        color: mobilePColor,
+        strokeWidth: 1,
               onRefresh: () async {
                 setState(() {});
               },
@@ -96,7 +115,7 @@ class _SearchScreenState extends State<SearchScreen>
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(
-                        child: CircularProgressIndicator(),
+                        child:CustomProgess(),
                       );
                     } else {
                       return GridView.builder(

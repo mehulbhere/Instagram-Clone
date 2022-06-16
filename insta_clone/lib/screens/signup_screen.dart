@@ -8,6 +8,7 @@ import 'package:insta_clone/resources/auth_methods.dart';
 import 'package:insta_clone/screens/login_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/utils.dart';
+import 'package:insta_clone/widgets/customProgess.dart';
 import 'package:insta_clone/widgets/text_field_input.dart';
 import 'dart:typed_data';
 
@@ -100,8 +101,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         radius: 64, backgroundImage: MemoryImage(_image!))
                     : CircleAvatar(
                         radius: 64,
-                        child: CachedNetworkImage(imageUrl:
-                            "https://images.unsplash.com/photo-1654302846461-aca08433cfda?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"),
+                        child: CachedNetworkImage(
+                            imageUrl:
+                                "https://images.unsplash.com/photo-1654302846461-aca08433cfda?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"),
                       ),
                 Positioned(
                     bottom: -10,
@@ -138,10 +140,7 @@ class _SignupScreenState extends State<SignupScreen> {
               onTap: signUpUser,
               child: Container(
                   child: _isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(
-                          color: mobilePColor,
-                        ))
+                      ? Center(child: CustomProgess())
                       : Text("Sign Up"),
                   width: double.infinity,
                   alignment: Alignment.center,

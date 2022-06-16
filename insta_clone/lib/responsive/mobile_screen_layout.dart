@@ -14,8 +14,8 @@ class MobileScreenLayout extends StatefulWidget {
   State<MobileScreenLayout> createState() => _MobileScreenLayoutState();
 }
 
-class _MobileScreenLayoutState extends State<MobileScreenLayout> with AutomaticKeepAliveClientMixin{
-
+class _MobileScreenLayoutState extends State<MobileScreenLayout>
+    with AutomaticKeepAliveClientMixin {
   //To avoid pages to reload on tab switch
   @override
   bool get wantKeepAlive => true;
@@ -70,42 +70,49 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> with AutomaticK
         controller: pageController,
         onPageChanged: pageChange, //Change the page on tap
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: mobileBgColor,
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-                color: _page == 0 ? mobilePColor : mobileAColor,
-              ),
-              label: "",
-              backgroundColor: mobileBgColor),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.search,
-                color: _page == 1 ? mobilePColor : mobileAColor,
-              ),
-              label: ""),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.video_collection_rounded,
-                color: _page == 2 ? mobilePColor : mobileAColor,
-              ),
-              label: ""),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.favorite,
-                color: _page == 3 ? mobilePColor : mobileAColor,
-              ),
-              label: ""),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.person,
-                color: _page == 4 ? mobilePColor : mobileAColor,
-              ),
-              label: ""),
-        ],
-        onTap: navigate,
+      bottomNavigationBar: SizedBox(
+        height: 45,
+        child: BottomNavigationBar(
+          iconSize: 25,
+          selectedFontSize: 0,
+          showSelectedLabels: false,
+          showUnselectedLabels: true,
+          backgroundColor: mobileBgColor,
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.home_rounded,
+                  color: _page == 0 ? mobilePColor : mobileAColor,
+                ),
+                label: "",
+                backgroundColor: mobileBgColor),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.search_outlined,
+                  color: _page == 1 ? mobilePColor : mobileAColor,
+                ),
+                label: ""),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.add_box_outlined,
+                  color: _page == 2 ? mobilePColor : mobileAColor,
+                ),
+                label: ""),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.favorite,
+                  color: _page == 3 ? mobilePColor : mobileAColor,
+                ),
+                label: ""),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.account_circle,
+                  color: _page == 4 ? mobilePColor : mobileAColor,
+                ),
+                label: ""),
+          ],
+          onTap: navigate,
+        ),
       ),
     );
   }

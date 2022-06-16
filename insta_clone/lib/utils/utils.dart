@@ -32,4 +32,13 @@ showSnackBar(String message, BuildContext context) {
       },
     ),
   ));
+
+  
 }
+CircularProgressIndicator customCircularProgressIndicator() {
+    return CircularProgressIndicator(
+      color: mobilePColor,
+      backgroundColor: mobileSecondaryColor,
+      strokeWidth: 1,
+    );
+  }
