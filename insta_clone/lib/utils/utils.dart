@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_clone/utils/colors.dart';
+import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
 
 pickImage(ImageSource source) async {
@@ -41,4 +43,20 @@ CircularProgressIndicator customCircularProgressIndicator() {
       backgroundColor: mobileSecondaryColor,
       strokeWidth: 1,
     );
+  }
+
+String getPostTime(time) {
+    Timestamp postStamp = (time);
+    DateTime postTime = postStamp.toDate();
+    DateTime currTime = DateTime.now();
+    String timeStr = "";
+    print("${postTime.day} > ${currTime.day}");
+    if (postTime.day < currTime.day) {
+      timeStr = DateFormat.yMMMd().format(time.toDate());
+    } else {
+      timeStr = currTime.hour - postTime.hour > 0
+          ? (currTime.hour - postTime.hour).toString() + " hrs ago"
+          : (currTime.minute - postTime.minute).toString() + " mins ago";
+    }
+    return timeStr;
   }

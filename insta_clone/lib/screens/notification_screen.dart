@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_clone/models/likeModel.dart';
 import 'package:insta_clone/utils/colors.dart';
+import 'package:insta_clone/utils/utils.dart';
 import 'package:insta_clone/widgets/customProgess.dart';
 import 'package:insta_clone/widgets/displayImage.dart';
 import 'package:intl/intl.dart';
@@ -83,8 +84,17 @@ class _ActivityScreenState extends State<ActivityScreen> {
                               likes[index].profImage)),
                     ),
                   ),
-                  title: Text("${likes[index].username} liked your post"),
-                  subtitle: Text(getTime(likes[index].dateOfPublish)),
+                  title: RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: "${likes[index].username} ",
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(
+                          text: "liked your post",
+                          style: TextStyle(fontWeight: FontWeight.normal)),
+                    ]),
+                  ),
+                  subtitle: Text(getPostTime(likes[index].dateOfPublish)),
                   trailing: Container(
                     height: kToolbarHeight * 0.75,
                     width: kToolbarHeight * 0.75,
@@ -103,19 +113,5 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  String getTime(time) {
-    Timestamp postStamp = (time);
-    DateTime postTime = postStamp.toDate();
-    DateTime currTime = DateTime.now();
-    String timeStr = "";
-    print("${postTime.day} > ${currTime.day}");
-    if (postTime.day < currTime.day) {
-      timeStr = DateFormat.yMMMd().format(time.toDate());
-    } else {
-      timeStr = currTime.hour - postTime.hour > 0
-          ? (currTime.hour - postTime.hour).toString() + " hrs ago"
-          : (currTime.minute - postTime.minute).toString() + " mins ago";
-    }
-    return timeStr;
-  }
+  
 }

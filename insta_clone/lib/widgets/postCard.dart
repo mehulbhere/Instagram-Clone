@@ -28,7 +28,9 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
-  int commentsCount = 1;
+  int commentsCount = 0;
+  int likesCount = 0;
+  bool isLiked = false;
 
   void getCommentCount() async {
     try {
@@ -37,8 +39,14 @@ class _PostCardState extends State<PostCard> {
           .doc(widget.snap['postId'])
           .collection('comments')
           .get();
+      QuerySnapshot likeSnap = await FirebaseFirestore.instance
+          .collection("posts")
+          .doc(widget.snap['postId'])
+          .collection('likes')
+          .get();
       setState(() {
         commentsCount = commentSnap.docs.length;
+        likesCount = likeSnap.docs.length;
       });
       print("got comment count");
     } catch (err) {
@@ -56,12 +64,15 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final model.User user = Provider.of<UserProvider>(context).getUser;
+    setState(() {
+      isLiked = widget.snap['likes'].contains(user.uid);
+    });
     return Container(
       color: mobileBgColor,
       padding: EdgeInsets.only(bottom: 20),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: Row(
             children: [
               CircleAvatar(
@@ -85,6 +96,10 @@ class _PostCardState extends State<PostCard> {
                         context: context,
                         builder: (context) {
                           return (SimpleDialog(
+                            backgroundColor: mobileSecondaryColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            title: Text("Options"),
                             children: [
                               SimpleDialogOption(
                                 child: Text("Delete Post"),
@@ -100,14 +115,18 @@ class _PostCardState extends State<PostCard> {
                           ));
                         });
                   },
-                  icon: Icon(Icons.more_vert)),
+                  icon: Icon(
+                    Icons.more_vert_rounded,
+                    size: 20,
+                  )),
             ],
           ),
         ),
         GestureDetector(
           onDoubleTap: () async {
-            await FirestoreMethod().likedPost(
-                widget.snap['postId'], user.uid, widget.snap['likes'], true,  user.username, user.photoUrl);
+            await FirestoreMethod().likedPost(widget.snap['postId'], user.uid,
+                widget.snap['likes'], true, user.username, user.photoUrl);
+            getCommentCount();
             setState(() {
               isLikeAnimating = true;
             });
@@ -151,16 +170,22 @@ class _PostCardState extends State<PostCard> {
                 isAnimating: widget.snap['likes'].contains(user.uid),
                 smallLike: true,
                 child: IconButton(
-                  icon: widget.snap['likes'].contains(user.uid)
+                  icon: isLiked
                       ? Icon(
                           Icons.favorite,
                           color: Colors.red,
                         )
                       : Icon(Icons.favorite_border),
                   onPressed: () async {
-                    await FirestoreMethod().likedPost(widget.snap['postId'],
-                        user.uid, widget.snap['likes'], false, user.username, user.photoUrl);
-                    showSnackBar("Liked", context);
+                    await FirestoreMethod().likedPost(
+                        widget.snap['postId'],
+                        user.uid,
+                        widget.snap['likes'],
+                        false,
+                        user.username,
+                        user.photoUrl);
+                    getCommentCount();
+                    setState(() {});
                   },
                 ),
               ),
@@ -196,7 +221,7 @@ class _PostCardState extends State<PostCard> {
                                     size: 15,
                                   ),
                                   Text(
-                                    " ${widget.snap['likes'].length} likes",
+                                    " ${likesCount} likes",
                                     style: TextStyle(fontSize: 12),
                                   ),
                                 ],
@@ -240,8 +265,9 @@ class _PostCardState extends State<PostCard> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
           child: Text(
-            getTime(),
-            style: TextStyle(fontWeight: FontWeight.w400, color: mobileAColor),
+            getPostTime(widget.snap['dateOfPublish']),
+            style:
+                TextStyle(fontWeight: FontWeight.normal, color: mobileAColor),
           ),
         ),
         Divider(
@@ -249,22 +275,5 @@ class _PostCardState extends State<PostCard> {
         )
       ]),
     );
-  }
-
-  String getTime() {
-    Timestamp postStamp = (widget.snap['dateOfPublish']);
-    DateTime postTime = postStamp.toDate();
-    DateTime currTime = DateTime.now();
-    String timeStr = "";
-    print("${postTime.day} > ${currTime.day}");
-    if (postTime.day < currTime.day) {
-      timeStr =
-          DateFormat.yMMMd().format(widget.snap['dateOfPublish'].toDate());
-    } else {
-      timeStr = currTime.hour - postTime.hour > 0
-          ? (currTime.hour - postTime.hour).toString() + " hrs ago"
-          : (currTime.minute - postTime.minute).toString() + " mins ago";
-    }
-    return timeStr;
   }
 }

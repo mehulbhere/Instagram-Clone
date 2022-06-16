@@ -64,11 +64,14 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout>
     // model.User user = Provider.of<UserProvider>(context).getUser;
 
     return Scaffold(
-      body: PageView(
-        children: tabs,
-        physics: NeverScrollableScrollPhysics(), //Cannot scroll to switch tabs
-        controller: pageController,
-        onPageChanged: pageChange, //Change the page on tap
+      body: SafeArea(
+        child: PageView(
+          children: tabs,
+          physics:
+              NeverScrollableScrollPhysics(), //Cannot scroll to switch tabs
+          controller: pageController,
+          onPageChanged: pageChange, //Change the page on tap
+        ),
       ),
       bottomNavigationBar: SizedBox(
         height: 45,
