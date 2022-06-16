@@ -29,10 +29,13 @@ class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
   Stream<QuerySnapshot<Map<String, dynamic>>> getStream() {
     print("Fecthing..............................");
     db.settings = Settings(persistenceEnabled: true);
-    Stream<QuerySnapshot<Map<String, dynamic>>> stream =
-        db.collection("posts").snapshots(includeMetadataChanges: true);
+    Stream<QuerySnapshot<Map<String, dynamic>>> stream = db
+        .collection("posts")
+        .orderBy('dateOfPublish', descending: true)
+        .snapshots(includeMetadataChanges: true);
     db
         .collection("posts")
+        .orderBy('dateOfPublish', descending: true)
         .snapshots(includeMetadataChanges: true)
         .listen((event) {
       for (var change in event.docChanges) {

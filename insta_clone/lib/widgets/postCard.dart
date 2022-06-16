@@ -7,6 +7,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:insta_clone/providers/user_provider.dart';
 import 'package:insta_clone/resources/firestore_methods.dart';
 import 'package:insta_clone/screens/comment_screen.dart';
+import 'package:insta_clone/screens/displayLikes_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/utils.dart';
 import 'package:insta_clone/widgets/displayImage.dart';
@@ -106,7 +107,7 @@ class _PostCardState extends State<PostCard> {
         GestureDetector(
           onDoubleTap: () async {
             await FirestoreMethod().likedPost(
-                widget.snap['postId'], user.uid, widget.snap['likes'], true);
+                widget.snap['postId'], user.uid, widget.snap['likes'], true,  user.username, user.photoUrl);
             setState(() {
               isLikeAnimating = true;
             });
@@ -158,7 +159,7 @@ class _PostCardState extends State<PostCard> {
                       : Icon(Icons.favorite_border),
                   onPressed: () async {
                     await FirestoreMethod().likedPost(widget.snap['postId'],
-                        user.uid, widget.snap['likes'], false);
+                        user.uid, widget.snap['likes'], false, user.username, user.photoUrl);
                     showSnackBar("Liked", context);
                   },
                 ),
@@ -179,37 +180,42 @@ class _PostCardState extends State<PostCard> {
               Expanded(
                 child: Align(
                     alignment: Alignment.bottomRight,
-                    child: Container(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(
-                                  Icons.favorite,
-                                  size: 15,
-                                ),
-                                Text(
-                                  " ${widget.snap['likes'].length} likes",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(
-                                  CupertinoIcons.chat_bubble,
-                                  size: 15,
-                                ),
-                                Text(
-                                  " ${commentsCount} comments",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ],
-                            ),
-                          ]),
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              DisplayLikes(postId: widget.snap['postId']))),
+                      child: Container(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    Icons.favorite,
+                                    size: 15,
+                                  ),
+                                  Text(
+                                    " ${widget.snap['likes'].length} likes",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.chat_bubble,
+                                    size: 15,
+                                  ),
+                                  Text(
+                                    " ${commentsCount} comments",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ]),
+                      ),
                     )),
               )
             ],
@@ -234,7 +240,7 @@ class _PostCardState extends State<PostCard> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
           child: Text(
-            DateFormat.yMMMd().format(widget.snap['dateOfPublish'].toDate()),
+            getTime(),
             style: TextStyle(fontWeight: FontWeight.w400, color: mobileAColor),
           ),
         ),
@@ -243,5 +249,22 @@ class _PostCardState extends State<PostCard> {
         )
       ]),
     );
+  }
+
+  String getTime() {
+    Timestamp postStamp = (widget.snap['dateOfPublish']);
+    DateTime postTime = postStamp.toDate();
+    DateTime currTime = DateTime.now();
+    String timeStr = "";
+    print("${postTime.day} > ${currTime.day}");
+    if (postTime.day < currTime.day) {
+      timeStr =
+          DateFormat.yMMMd().format(widget.snap['dateOfPublish'].toDate());
+    } else {
+      timeStr = currTime.hour - postTime.hour > 0
+          ? (currTime.hour - postTime.hour).toString() + " hrs ago"
+          : (currTime.minute - postTime.minute).toString() + " mins ago";
+    }
+    return timeStr;
   }
 }

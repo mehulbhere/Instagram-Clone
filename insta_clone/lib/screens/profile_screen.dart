@@ -208,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       .get(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
-                      return Center(child:CustomProgess());
+                      return Center(child: CustomProgess());
                     } else {
                       return GridView.builder(
                           scrollDirection: Axis.vertical,

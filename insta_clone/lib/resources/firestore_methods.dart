@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:insta_clone/models/comment.dart';
+import 'package:insta_clone/models/likeModel.dart';
 import 'package:insta_clone/models/post.dart';
 import 'package:insta_clone/resources/storage_methods.dart';
 import 'package:insta_clone/utils/utils.dart';
@@ -46,17 +47,38 @@ class FirestoreMethod {
   }
 
   Future<void> likedPost(
-      String postId, String uid, List likes, bool isAnimated) async {
+      String postId, String uid, List likes, bool isAnimated,  String username,  String profImage) async {
     try {
+      LikeModel like = LikeModel(
+            uid: uid,
+            postId: postId,
+            username: username,
+            dateOfPublish: DateTime.now(),
+            profImage: profImage
+      );
       if (likes.contains(uid) && !isAnimated) {
         //remove our uid from the list
         await _firebaseFirestore.collection("posts").doc(postId).update({
           "likes": FieldValue.arrayRemove([uid])
+        
         });
+         _firebaseFirestore
+            .collection("posts")
+            .doc(postId)
+            .collection("likes")
+            .doc(uid)
+            .delete();
       } else {
         await _firebaseFirestore.collection("posts").doc(postId).update({
           "likes": FieldValue.arrayUnion([uid])
+          
         });
+        _firebaseFirestore
+            .collection("posts")
+            .doc(postId)
+            .collection("likes")
+            .doc(uid)
+            .set(like.toJson());
       }
     } catch (err) {}
   }
@@ -128,4 +150,16 @@ class FirestoreMethod {
       print(err.toString());
     }
   }
+
+  Future<List<String>> getLikes(String postId) async {
+    DocumentSnapshot snap =
+        await _firebaseFirestore.collection("posts").doc(postId).get();
+    List<String> likes = ((snap.data()! as dynamic)['likes'] as List)
+        .map((e) => e as String)
+        .toList();
+    print(likes);
+    return likes;
+  }
+
+
 }
