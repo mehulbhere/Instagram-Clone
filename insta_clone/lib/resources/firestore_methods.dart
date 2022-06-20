@@ -46,23 +46,21 @@ class FirestoreMethod {
     }
   }
 
-  Future<void> likedPost(
-      String postId, String uid, List likes, bool isAnimated,  String username,  String profImage) async {
+  Future<void> likedPost(String postId, String uid, List likes, bool isAnimated,
+      String username, String profImage) async {
     try {
       LikeModel like = LikeModel(
-            uid: uid,
-            postId: postId,
-            username: username,
-            dateOfPublish: DateTime.now(),
-            profImage: profImage
-      );
+          uid: uid,
+          postId: postId,
+          username: username,
+          dateOfPublish: DateTime.now(),
+          profImage: profImage);
       if (likes.contains(uid) && !isAnimated) {
         //remove our uid from the list
         await _firebaseFirestore.collection("posts").doc(postId).update({
           "likes": FieldValue.arrayRemove([uid])
-        
         });
-         _firebaseFirestore
+        _firebaseFirestore
             .collection("posts")
             .doc(postId)
             .collection("likes")
@@ -71,7 +69,6 @@ class FirestoreMethod {
       } else {
         await _firebaseFirestore.collection("posts").doc(postId).update({
           "likes": FieldValue.arrayUnion([uid])
-          
         });
         _firebaseFirestore
             .collection("posts")
@@ -128,23 +125,24 @@ class FirestoreMethod {
       DocumentSnapshot snap =
           await _firebaseFirestore.collection("users").doc(uid).get();
       List following = (snap.data()! as dynamic)['following'];
-
+      print("Im following ${following}");
+      print("Checking ${followUid} and ${uid}");
       if (following.contains(followUid)) {
         print("unfollwed ${followUid}");
         await _firebaseFirestore.collection("users").doc(followUid).update({
           'followers': FieldValue.arrayRemove([uid])
-        });
+        }).then((value) => print("done"));
         await _firebaseFirestore.collection("users").doc(uid).update({
           'following': FieldValue.arrayRemove([followUid])
-        });
+        }).then((value) => print("done"));
       } else {
         print("followed ${followUid}");
         await _firebaseFirestore.collection("users").doc(followUid).update({
           'followers': FieldValue.arrayUnion([uid])
-        });
+        }).then((value) => print("done"));
         await _firebaseFirestore.collection("users").doc(uid).update({
           'following': FieldValue.arrayUnion([followUid])
-        });
+        }).then((value) => print("done"));
       }
     } catch (err) {
       print(err.toString());
@@ -160,6 +158,4 @@ class FirestoreMethod {
     print(likes);
     return likes;
   }
-
-
 }

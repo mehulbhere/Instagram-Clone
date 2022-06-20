@@ -35,17 +35,17 @@ class _SearchScreenState extends State<SearchScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: mobileBgColor,
+        backgroundColor: Theme.of(context).backgroundColor,
         title: Container(
           alignment: Alignment.center,
           height: 40,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: mobileSecondaryColor),
+              color: Theme.of(context).primaryColorDark),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: TextFormField(
-              cursorColor: mobilePColor,
+              cursorColor: Theme.of(context).primaryColor,
               cursorWidth: 1,
               textAlignVertical: TextAlignVertical.center,
               controller: _searchController,
@@ -65,6 +65,8 @@ class _SearchScreenState extends State<SearchScreen>
       ),
       body: isSearch
           ? RefreshIndicator(
+              color: Theme.of(context).primaryColor,
+              backgroundColor: Theme.of(context).backgroundColor,
               onRefresh: () async {
                 setState(() {});
               },
@@ -98,8 +100,8 @@ class _SearchScreenState extends State<SearchScreen>
               ),
             )
           : RefreshIndicator(
-              backgroundColor: mobileSecondaryColor,
-              color: mobilePColor,
+              color: Theme.of(context).primaryColor,
+              backgroundColor: Theme.of(context).backgroundColor,
               strokeWidth: 1,
               onRefresh: () async {
                 setState(() {});

@@ -80,37 +80,47 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout>
           selectedFontSize: 0,
           showSelectedLabels: false,
           showUnselectedLabels: true,
-          backgroundColor: mobileBgColor,
+          backgroundColor: Theme.of(context).backgroundColor,
           items: [
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.home_rounded,
-                  color: _page == 0 ? mobilePColor : mobileAColor,
+                  color: _page == 0
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).primaryColorLight,
                 ),
                 label: "",
-                backgroundColor: mobileBgColor),
+                backgroundColor: Theme.of(context).backgroundColor),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.search_outlined,
-                  color: _page == 1 ? mobilePColor : mobileAColor,
+                  color: _page == 1
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).primaryColorLight,
                 ),
                 label: ""),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.add_box_outlined,
-                  color: _page == 2 ? mobilePColor : mobileAColor,
+                  color: _page == 2
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).primaryColorLight,
                 ),
                 label: ""),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.favorite,
-                  color: _page == 3 ? mobilePColor : mobileAColor,
+                  color: _page == 3
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).primaryColorLight,
                 ),
                 label: ""),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.account_circle,
-                  color: _page == 4 ? mobilePColor : mobileAColor,
+                  color: _page == 4
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).primaryColorLight,
                 ),
                 label: ""),
           ],

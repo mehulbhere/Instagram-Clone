@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_clone/providers/user_provider.dart';
@@ -135,21 +136,40 @@ class _NewPostState extends State<NewPost> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add_box_outlined),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  Icon(
+                    CupertinoIcons.add_circled,
+                    size: 100,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "New post",
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColor, fontSize: 25),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    width: 250,
+                    alignment: Alignment.center,
                     child: Text(
-                      "New post",
-                      style: TextStyle(color: blueColor),
+                      "Add new photos and videos, they'll appear on your profile",
+                      softWrap: true,
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(color: Theme.of(context).primaryColorLight),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
           ))
         : Scaffold(
             appBar: AppBar(
-                backgroundColor: mobileBgColor,
+                backgroundColor: Theme.of(context).backgroundColor,
                 title: Text("New Post"),
                 centerTitle: false,
                 actions: [

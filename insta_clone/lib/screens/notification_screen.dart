@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_clone/models/likeModel.dart';
 import 'package:insta_clone/utils/colors.dart';
@@ -63,45 +64,90 @@ class _ActivityScreenState extends State<ActivityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        foregroundColor: Theme.of(context).primaryColor,
         backwardsCompatibility: false,
         title: Text("Activity"),
-        backgroundColor: mobileBgColor,
+        backgroundColor: Theme.of(context).backgroundColor,
       ),
       body: isLoading
           ? Center(child: CustomProgess())
-          : ListView.builder(
-              itemCount: likes.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: Container(
-                    height: kToolbarHeight * 0.75,
-                    width: kToolbarHeight * 0.75,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: CachedNetworkImageProvider(
-                              likes[index].profImage)),
-                    ),
+          : likes.length == 0
+              ? Center(
+                  child: Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        CupertinoIcons.graph_square,
+                        size: 100,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "No Activity to show",
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 25),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        width: 250,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Likes and Comments will be shown in activity",
+                          softWrap: true,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Theme.of(context).primaryColorLight),
+                        ),
+                      ),
+                    ],
                   ),
-                  title: RichText(
-                    text: TextSpan(children: [
-                      TextSpan(
-                          text: "${likes[index].username} ",
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(
-                          text: "liked your post",
-                          style: TextStyle(fontWeight: FontWeight.normal)),
-                    ]),
-                  ),
-                  subtitle: Text(getPostTime(likes[index].dateOfPublish)),
-                  trailing: Container(
-                    height: kToolbarHeight * 0.75,
-                    width: kToolbarHeight * 0.75,
-                    child: DisplayImage(url: getPostImage(likes[index].postId)),
-                  ),
-                );
-              }),
+                ))
+              : ListView.builder(
+                  itemCount: likes.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Container(
+                        height: kToolbarHeight * 0.75,
+                        width: kToolbarHeight * 0.75,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: CachedNetworkImageProvider(
+                                  likes[index].profImage)),
+                        ),
+                      ),
+                      title: RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                              text: "${likes[index].username} ",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).primaryColor)),
+                          TextSpan(
+                              text: "liked your post",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  color: Theme.of(context).primaryColor)),
+                        ]),
+                      ),
+                      subtitle: Text(getPostTime(likes[index].dateOfPublish)),
+                      trailing: Container(
+                        height: kToolbarHeight * 0.75,
+                        width: kToolbarHeight * 0.75,
+                        child: DisplayImage(
+                            url: getPostImage(likes[index].postId)),
+                      ),
+                    );
+                  }),
     );
   }
 
@@ -112,6 +158,4 @@ class _ActivityScreenState extends State<ActivityScreen> {
       }
     }
   }
-
-  
 }

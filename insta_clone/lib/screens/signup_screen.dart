@@ -90,7 +90,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             SvgPicture.asset(
               "assets/ic_instagram.svg",
-              color: mobilePColor,
+              color: Theme.of(context).primaryColor,
               height: 64,
             ),
             SizedBox(height: 24),
@@ -141,7 +141,11 @@ class _SignupScreenState extends State<SignupScreen> {
               child: Container(
                   child: _isLoading
                       ? Center(child: CustomProgess())
-                      : Text("Sign Up"),
+                      : Text(
+                          "Sign Up",
+                          style: TextStyle(
+                              color: Theme.of(context).backgroundColor),
+                        ),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 10),

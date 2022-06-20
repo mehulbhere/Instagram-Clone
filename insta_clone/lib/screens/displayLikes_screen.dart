@@ -10,7 +10,9 @@ import '../widgets/customProgess.dart';
 
 class DisplayLikes extends StatefulWidget {
   final String postId;
-  const DisplayLikes({Key? key, required this.postId}) : super(key: key);
+  final likeCount;
+  const DisplayLikes({Key? key, required this.postId, required this.likeCount})
+      : super(key: key);
 
   @override
   _DisplayLikesState createState() => _DisplayLikesState();
@@ -19,19 +21,24 @@ class DisplayLikes extends StatefulWidget {
 class _DisplayLikesState extends State<DisplayLikes> {
   bool isLoading = true;
   var likes;
+  var listLikes;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
     setState(() {
-      FirestoreMethod().getLikes(widget.postId).then((value) {
-        setState(() {
-          likes = value;
-          print("likes: ${likes}");
-          isLoading = false;
+      if (widget.likeCount != 0)
+        FirestoreMethod().getLikes(widget.postId).then((value) {
+          setState(() {
+            likes = value;
+            print("likes: ${likes}");
+            isLoading = false;
+          });
         });
-      });
+      else {
+        isLoading = false;
+      }
     });
   }
 
@@ -41,8 +48,13 @@ class _DisplayLikesState extends State<DisplayLikes> {
         ? Center(child: CustomProgess())
         : Scaffold(
             appBar: AppBar(
-              title: Text("Likes"),
-              backgroundColor: mobileBgColor,
+              elevation: 0,
+              foregroundColor: Theme.of(context).primaryColor,
+              title: Text(
+                "Likes",
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
+              backgroundColor: Theme.of(context).backgroundColor,
             ),
             body: Column(
               children: [
@@ -54,7 +66,7 @@ class _DisplayLikesState extends State<DisplayLikes> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "  ${likes.length} likes",
+                          "  ${widget.likeCount} likes",
                         ),
                       )
                     ],
@@ -62,38 +74,47 @@ class _DisplayLikesState extends State<DisplayLikes> {
                 ),
                 Divider(
                   height: 20,
-                  color: mobilePColor,
+                  color: Theme.of(context).dividerColor,
                 ),
-                FutureBuilder(
-                  future: FirebaseFirestore.instance
-                      .collection("users")
-                      .where("uid", whereIn: likes)
-                      .get(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CustomProgess(),
-                      );
-                    } else {
-                      return ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: (snapshot.data! as dynamic).docs.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) => ProfileScreen(
-                                          uid: (snapshot.data! as dynamic)
-                                              .docs[index]['uid']))),
-                              child: UserTile(
-                                snap: (snapshot.data! as dynamic).docs[index],
-                              ),
+                widget.likeCount == 0
+                    ? Center(
+                        child: Text("No likes"),
+                      )
+                    : FutureBuilder(
+                        future: FirebaseFirestore.instance
+                            .collection("users")
+                            .where("uid", whereIn: likes)
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: CustomProgess(),
                             );
-                          });
-                    }
-                  },
-                ),
+                          } else if (snapshot.connectionState !=
+                              ConnectionState.waiting) {
+                            return ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount:
+                                    (snapshot.data! as dynamic).docs.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) => ProfileScreen(
+                                                uid: (snapshot.data! as dynamic)
+                                                    .docs[index]['uid']))),
+                                    child: UserTile(
+                                      snap: (snapshot.data! as dynamic)
+                                          .docs[index],
+                                    ),
+                                  );
+                                });
+                          } else {
+                            return Text("Nothing to show");
+                          }
+                        },
+                      ),
               ],
             ),
           );

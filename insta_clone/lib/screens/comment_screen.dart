@@ -55,7 +55,9 @@ class _CommentScreenState extends State<CommentScreen> {
       appBar: AppBar(
         title: Text("Comments"),
         centerTitle: false,
-        backgroundColor: mobileBgColor,
+        backgroundColor: Theme.of(context).backgroundColor,
+        elevation: 0,
+        foregroundColor: Theme.of(context).primaryColor,
       ),
       body: StreamBuilder(
         stream: getStream(),
@@ -74,47 +76,51 @@ class _CommentScreenState extends State<CommentScreen> {
       bottomNavigationBar: SafeArea(
           child: Container(
         height: kToolbarHeight,
+        color: Theme.of(context).primaryColorDark,
         margin:
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: Row(children: [
-          Container(
-            height: kToolbarHeight * 0.75,
-            width: kToolbarHeight * 0.75,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: CachedNetworkImageProvider(user.photoUrl))),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Enter comment as ${user.username}",
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(children: [
+            Container(
+              height: kToolbarHeight * 0.75,
+              width: kToolbarHeight * 0.75,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: CachedNetworkImageProvider(user.photoUrl))),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Enter comment as ${user.username}",
+                  ),
+                  controller: _commentController,
                 ),
-                controller: _commentController,
               ),
             ),
-          ),
-          IconButton(
-              onPressed: () async {
-                await FirestoreMethod().postComment(
-                    widget.snap['postId'],
-                    _commentController.text,
-                    user.uid,
-                    user.username,
-                    user.photoUrl);
-                setState(() {
-                  _commentController.text = "";
-                });
-              },
-              icon: Icon(
-                Icons.done,
-                color: blueColor,
-              ))
-        ]),
+            IconButton(
+                onPressed: () async {
+                  await FirestoreMethod().postComment(
+                      widget.snap['postId'],
+                      _commentController.text,
+                      user.uid,
+                      user.username,
+                      user.photoUrl);
+                  setState(() {
+                    _commentController.text = "";
+                  });
+                },
+                icon: Icon(
+                  Icons.done,
+                  color: blueColor,
+                ))
+          ]),
+        ),
       )),
     );
   }

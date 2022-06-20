@@ -18,6 +18,8 @@ import 'package:insta_clone/models/user.dart' as model;
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
+import '../screens/profile_screen.dart';
+
 class PostCard extends StatefulWidget {
   final snap;
   const PostCard({Key? key, required this.snap}) : super(key: key);
@@ -67,21 +69,22 @@ class _PostCardState extends State<PostCard> {
     setState(() {
       isLiked = widget.snap['likes'].contains(user.uid);
     });
-    return Container(
-      color: mobileBgColor,
-      padding: EdgeInsets.only(bottom: 20),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: DisplayImage(url: widget.snap['profImage'])),
-              ),
-              Expanded(
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: DisplayImage(url: widget.snap['profImage'])),
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        ProfileScreen(uid: widget.snap['uid']))),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 15.0),
                   child: Text(
@@ -90,190 +93,209 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
               ),
-              IconButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return (SimpleDialog(
-                            backgroundColor: mobileSecondaryColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            title: Text("Options"),
-                            children: [
-                              SimpleDialogOption(
-                                child: Text("Delete Post"),
-                                onPressed: () async {
-                                  FirestoreMethod()
-                                      .deletePost(widget.snap['postId']);
-                                  Navigator.of(context).pop();
-                                  showSnackBar(
-                                      "Post Deleted Successfully", context);
-                                },
-                              )
-                            ],
-                          ));
-                        });
-                  },
-                  icon: Icon(
-                    Icons.more_vert_rounded,
-                    size: 20,
-                  )),
-            ],
-          ),
-        ),
-        GestureDetector(
-          onDoubleTap: () async {
-            await FirestoreMethod().likedPost(widget.snap['postId'], user.uid,
-                widget.snap['likes'], true, user.username, user.photoUrl);
-            getCommentCount();
-            setState(() {
-              isLikeAnimating = true;
-            });
-          },
-          child: Stack(alignment: Alignment.center, children: [
-            SizedBox(
-              // height: MediaQuery.of(context).size.height * 0.3,
-              width: double.infinity,
-              child: widget.snap['isVideo']
-                  ? DisplayVideo(snap: widget.snap)
-                  : DisplayImage(url: widget.snap['postUrl']),
             ),
-            AnimatedOpacity(
-              duration: Duration(milliseconds: 200),
-              opacity: isLikeAnimating ? 1 : 0,
-              child: LikeAnimation(
-                child: Icon(
-                  Icons.favorite_rounded,
-                  color: Color(0xffffffff),
-                  size: 100,
-                ),
-                isAnimating: isLikeAnimating,
-                duration: Duration(milliseconds: 400),
-                smallLike: false,
-                onEnd: () {
-                  setState(() {
-                    isLikeAnimating = false;
-                  });
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return (SimpleDialog(
+                          backgroundColor: Theme.of(context).backgroundColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          title: Text("Options"),
+                          children: [
+                            widget.snap['uid'] == user.uid
+                                ? SimpleDialogOption(
+                                    child: Text("Delete Post"),
+                                    onPressed: () async {
+                                      FirestoreMethod()
+                                          .deletePost(widget.snap['postId']);
+                                      Navigator.of(context).pop();
+                                      showSnackBar(
+                                          "Post Deleted Successfully", context);
+                                    },
+                                  )
+                                : SimpleDialogOption(
+                                    child: Text("View Profile"),
+                                    onPressed: () async {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ProfileScreen(
+                                                      uid:
+                                                          widget.snap['uid'])));
+                                    },
+                                  )
+                          ],
+                        ));
+                      });
+                },
+                icon: Icon(
+                  Icons.more_horiz_rounded,
+                  size: 20,
+                )),
+          ],
+        ),
+      ),
+      GestureDetector(
+        onDoubleTap: () async {
+          await FirestoreMethod().likedPost(widget.snap['postId'], user.uid,
+              widget.snap['likes'], true, user.username, user.photoUrl);
+          getCommentCount();
+          setState(() {
+            isLikeAnimating = true;
+          });
+        },
+        child: Stack(alignment: Alignment.center, children: [
+          SizedBox(
+            // height: MediaQuery.of(context).size.height * 0.3,
+            width: double.infinity,
+            child: widget.snap['isVideo']
+                ? DisplayVideo(snap: widget.snap)
+                : DisplayImage(url: widget.snap['postUrl']),
+          ),
+          AnimatedOpacity(
+            duration: Duration(milliseconds: 200),
+            opacity: isLikeAnimating ? 1 : 0,
+            child: LikeAnimation(
+              child: Icon(
+                Icons.favorite_rounded,
+                color: Color(0xffffffff),
+                size: 100,
+              ),
+              isAnimating: isLikeAnimating,
+              duration: Duration(milliseconds: 400),
+              smallLike: false,
+              onEnd: () {
+                setState(() {
+                  isLikeAnimating = false;
+                });
+              },
+            ),
+          )
+        ]),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(right: 10.0),
+        child: Row(
+          children: [
+            LikeAnimation(
+              onEnd: () {},
+              duration: Duration(milliseconds: 400),
+              isAnimating: widget.snap['likes'].contains(user.uid),
+              smallLike: true,
+              child: IconButton(
+                icon: isLiked
+                    ? Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                      )
+                    : Icon(Icons.favorite_border),
+                onPressed: () async {
+                  await FirestoreMethod().likedPost(
+                      widget.snap['postId'],
+                      user.uid,
+                      widget.snap['likes'],
+                      false,
+                      user.username,
+                      user.photoUrl);
+                  getCommentCount();
+                  setState(() {});
                 },
               ),
+            ),
+            IconButton(
+              icon: Icon(CupertinoIcons.chat_bubble),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => CommentScreen(snap: widget.snap))),
+            ),
+            IconButton(
+              icon: Icon(CupertinoIcons.paperplane),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(Icons.bookmark_border_outlined),
+              onPressed: () {},
+            ),
+            Expanded(
+              child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => DisplayLikes(
+                            postId: widget.snap['postId'],
+                            likeCount: likesCount))),
+                    child: Container(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(
+                                  Icons.favorite_border_outlined,
+                                  size: 15,
+                                ),
+                                Text(
+                                  " ${likesCount} likes",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(
+                                  CupertinoIcons.chat_bubble,
+                                  size: 15,
+                                ),
+                                Text(
+                                  " ${commentsCount} comments",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ]),
+                    ),
+                  )),
             )
-          ]),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 10.0),
-          child: Row(
-            children: [
-              LikeAnimation(
-                onEnd: () {},
-                duration: Duration(milliseconds: 400),
-                isAnimating: widget.snap['likes'].contains(user.uid),
-                smallLike: true,
-                child: IconButton(
-                  icon: isLiked
-                      ? Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                        )
-                      : Icon(Icons.favorite_border),
-                  onPressed: () async {
-                    await FirestoreMethod().likedPost(
-                        widget.snap['postId'],
-                        user.uid,
-                        widget.snap['likes'],
-                        false,
-                        user.username,
-                        user.photoUrl);
-                    getCommentCount();
-                    setState(() {});
-                  },
-                ),
-              ),
-              IconButton(
-                icon: Icon(CupertinoIcons.chat_bubble),
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CommentScreen(snap: widget.snap))),
-              ),
-              IconButton(
-                icon: Icon(CupertinoIcons.paperplane),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.bookmark_border_outlined),
-                onPressed: () {},
-              ),
-              Expanded(
-                child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: GestureDetector(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              DisplayLikes(postId: widget.snap['postId']))),
-                      child: Container(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(
-                                    Icons.favorite,
-                                    size: 15,
-                                  ),
-                                  Text(
-                                    " ${likesCount} likes",
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.chat_bubble,
-                                    size: 15,
-                                  ),
-                                  Text(
-                                    " ${commentsCount} comments",
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                            ]),
-                      ),
-                    )),
-              )
-            ],
-          ),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.only(top: 10, right: 10),
+          child: RichText(
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(children: [
+                TextSpan(
+                    text: widget.snap['username'] + " ",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor)),
+                TextSpan(
+                    text: widget.snap['caption'],
+                    style: TextStyle(color: Theme.of(context).primaryColor))
+              ])),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.only(top: 10, right: 10),
-            child: RichText(
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                text: TextSpan(children: [
-                  TextSpan(
-                      text: widget.snap['username'] + " ",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  TextSpan(text: widget.snap['caption'])
-                ])),
-          ),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+        child: Text(
+          getPostTime(widget.snap['dateOfPublish']),
+          style: TextStyle(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).primaryColorLight),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-          child: Text(
-            getPostTime(widget.snap['dateOfPublish']),
-            style:
-                TextStyle(fontWeight: FontWeight.normal, color: mobileAColor),
-          ),
-        ),
-        Divider(
-          color: mobileAColor,
-        )
-      ]),
-    );
+      ),
+      Divider(
+        height: 20,
+        color: Theme.of(context).primaryColor,
+      )
+    ]);
   }
 }

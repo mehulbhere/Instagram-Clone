@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SvgPicture.asset(
               "assets/ic_instagram.svg",
-              color: mobilePColor,
+              color: Theme.of(context).primaryColor,
               height: 64,
             ),
             SizedBox(height: 64),
@@ -91,9 +91,12 @@ class _LoginScreenState extends State<LoginScreen> {
               onTap: loginUser,
               child: Container(
                   child: _isLoading
-                      ? Center(
-                          child:CustomProgess())
-                      : Text("Login"),
+                      ? Center(child: CustomProgess())
+                      : Text(
+                          "Login",
+                          style: TextStyle(
+                              color: Theme.of(context).backgroundColor),
+                        ),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 10),

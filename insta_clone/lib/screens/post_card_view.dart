@@ -17,7 +17,9 @@ class _PostCardViewState extends State<PostCardView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: mobileBgColor,
+        elevation: 0,
+        foregroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).backgroundColor,
         toolbarHeight: kToolbarHeight,
         title: Text(widget.title),
       ),

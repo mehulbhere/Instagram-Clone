@@ -58,15 +58,20 @@ class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
     final User user = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 40,
-        backgroundColor: mobileBgColor,
+        elevation: 0,
+        toolbarHeight: 50,
+        backgroundColor: Theme.of(context).backgroundColor,
         centerTitle: true,
-        leading:
-            IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.camera)),
+        leading: IconButton(
+            onPressed: () {},
+            icon: Icon(
+              CupertinoIcons.camera,
+              color: Theme.of(context).primaryColor,
+            )),
         title: SvgPicture.asset(
           'assets/ic_instagram.svg',
           alignment: Alignment.bottomCenter,
-          color: mobilePColor,
+          color: Theme.of(context).primaryColor,
           height: 30,
         ),
         actions: [
@@ -75,13 +80,14 @@ class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
             icon: Icon(
               CupertinoIcons.paperplane,
               size: 20,
+              color: Theme.of(context).primaryColor,
             ),
           )
         ],
       ),
       body: RefreshIndicator(
-        backgroundColor: mobileSecondaryColor,
-        color: mobilePColor,
+        backgroundColor: Theme.of(context).backgroundColor,
+        color: Theme.of(context).primaryColor,
         strokeWidth: 1,
         onRefresh: () async {
           setState(() {});
@@ -90,7 +96,7 @@ class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
+                padding: const EdgeInsets.only(bottom: 10.0, left: 10),
                 child: Row(
                   children: [
                     Stack(children: [
@@ -102,7 +108,15 @@ class _FeedState extends State<Feed> with AutomaticKeepAliveClientMixin {
                               onPressed: () {},
                               icon: Icon(
                                 CupertinoIcons.add_circled_solid,
-                              )))
+                                color: blueColor,
+                              ))),
+                      Positioned(
+                          bottom: 5,
+                          right: -10,
+                          child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(CupertinoIcons.add_circled,
+                                  color: Colors.white)))
                     ])
                   ],
                 ),

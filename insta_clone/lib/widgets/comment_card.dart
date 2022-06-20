@@ -24,7 +24,7 @@ class _CommentCardState extends State<CommentCard> {
           decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                   image: CachedNetworkImageProvider(widget.snap['profImage']))),
         ),
         Expanded(
@@ -38,10 +38,14 @@ class _CommentCardState extends State<CommentCard> {
                     text: TextSpan(children: [
                   TextSpan(
                       text: "${widget.snap['username']} ",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor)),
                   TextSpan(
                       text: "${widget.snap['commentText']}",
-                      style: TextStyle(fontWeight: FontWeight.normal)),
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          color: Theme.of(context).primaryColor)),
                 ])),
                 Padding(
                   padding: const EdgeInsets.only(top: 5.0),
