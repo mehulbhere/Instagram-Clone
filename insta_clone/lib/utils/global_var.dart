@@ -14,7 +14,7 @@ final tabs = [
   SearchScreen(),
   NewPost(),
   ActivityScreen(),
-  ProfileScreen(uid: uid),
+  ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid),
 ];
 
 const sampleImage =

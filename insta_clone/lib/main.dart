@@ -30,7 +30,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Insta Clone',
         theme: ThemeData.dark().copyWith(
-            scaffoldBackgroundColor: mobileBgColor, primaryColor: mobilePColor),
+            scaffoldBackgroundColor: mobileBgColor,
+            primaryColor: mobilePColor,
+            textTheme: ThemeData.dark().textTheme.apply(fontFamily: "Roboto")),
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {

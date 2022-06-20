@@ -7,6 +7,7 @@ import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/global_var.dart';
 import 'package:insta_clone/widgets/customProgess.dart';
 import 'package:insta_clone/widgets/displayImage.dart';
+import 'package:insta_clone/widgets/userTile.dart';
 
 import '../widgets/postCard.dart';
 
@@ -49,10 +50,12 @@ class _SearchScreenState extends State<SearchScreen>
               textAlignVertical: TextAlignVertical.center,
               controller: _searchController,
               decoration: InputDecoration(
-                  hintText: "Search for username",
-                  border: InputBorder.none),
-              onFieldSubmitted: (String _) {
+                  hintText: "Search for username", border: InputBorder.none),
+              onChanged: (String _) {
                 setState(() {
+                  if (_searchController.text == "") {
+                    isSearch = false;
+                  }
                   isSearch = true;
                 });
               },
@@ -61,52 +64,43 @@ class _SearchScreenState extends State<SearchScreen>
         ),
       ),
       body: isSearch
-          ? FutureBuilder(
-              future: FirebaseFirestore.instance
-                  .collection("users")
-                  .where('username',
-                      isGreaterThanOrEqualTo: _searchController.text)
-                  .get(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child:CustomProgess(),
-                  );
-                } else {
-                  return ListView.builder(
-                      itemCount: (snapshot.data! as dynamic).docs.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => ProfileScreen(
-                                      uid: (snapshot.data! as dynamic)
-                                          .docs[index]['uid']))),
-                          child: ListTile(
-                            leading: Container(
-                              height: kToolbarHeight * 0.75,
-                              width: kToolbarHeight * 0.75,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    fit: BoxFit.fill,
-                                    image: CachedNetworkImageProvider(
-                                        (snapshot.data! as dynamic).docs[index]
-                                            ['photoUrl'])),
-                              ),
-                            ),
-                            title: Text((snapshot.data! as dynamic).docs[index]
-                                ['username']),
-                          ),
-                        );
-                      });
-                }
+          ? RefreshIndicator(
+              onRefresh: () async {
+                setState(() {});
               },
+              child: FutureBuilder(
+                future: FirebaseFirestore.instance
+                    .collection("users")
+                    .where('username',
+                        isGreaterThanOrEqualTo: _searchController.text)
+                    .get(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CustomProgess(),
+                    );
+                  } else {
+                    return ListView.builder(
+                        itemCount: (snapshot.data! as dynamic).docs.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                              onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) => ProfileScreen(
+                                          uid: (snapshot.data! as dynamic)
+                                              .docs[index]['uid']))),
+                              child: UserTile(
+                                  snap:
+                                      (snapshot.data! as dynamic).docs[index]));
+                        });
+                  }
+                },
+              ),
             )
           : RefreshIndicator(
-             backgroundColor: mobileSecondaryColor,
-        color: mobilePColor,
-        strokeWidth: 1,
+              backgroundColor: mobileSecondaryColor,
+              color: mobilePColor,
+              strokeWidth: 1,
               onRefresh: () async {
                 setState(() {});
               },
@@ -115,7 +109,7 @@ class _SearchScreenState extends State<SearchScreen>
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(
-                        child:CustomProgess(),
+                        child: CustomProgess(),
                       );
                     } else {
                       return GridView.builder(

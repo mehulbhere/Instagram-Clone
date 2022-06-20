@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_clone/resources/firestore_methods.dart';
 import 'package:insta_clone/screens/profile_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
+import 'package:insta_clone/widgets/userTile.dart';
 
 import '../widgets/customProgess.dart';
 
@@ -41,56 +42,59 @@ class _DisplayLikesState extends State<DisplayLikes> {
         : Scaffold(
             appBar: AppBar(
               title: Text("Likes"),
-              actions: [
-                Icon(Icons.favorite),
-                Center(
-                  child: Text(
-                    "  ${likes.length} likes",
-                  ),
-                )
-              ],
               backgroundColor: mobileBgColor,
             ),
-            body: FutureBuilder(
-              future: FirebaseFirestore.instance
-                  .collection("users")
-                  .where("uid", whereIn: likes)
-                  .get(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CustomProgess(),
-                  );
-                } else {
-                  return ListView.builder(
-                      itemCount: (snapshot.data! as dynamic).docs.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => ProfileScreen(
-                                      uid: (snapshot.data! as dynamic)
-                                          .docs[index]['uid']))),
-                          child: ListTile(
-                            leading: Container(
-                              height: kToolbarHeight * 0.75,
-                              width: kToolbarHeight * 0.75,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    fit: BoxFit.fill,
-                                    image: CachedNetworkImageProvider(
-                                        (snapshot.data! as dynamic).docs[index]
-                                            ['photoUrl'])),
+            body: Column(
+              children: [
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(Icons.favorite),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "  ${likes.length} likes",
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Divider(
+                  height: 20,
+                  color: mobilePColor,
+                ),
+                FutureBuilder(
+                  future: FirebaseFirestore.instance
+                      .collection("users")
+                      .where("uid", whereIn: likes)
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CustomProgess(),
+                      );
+                    } else {
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: (snapshot.data! as dynamic).docs.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) => ProfileScreen(
+                                          uid: (snapshot.data! as dynamic)
+                                              .docs[index]['uid']))),
+                              child: UserTile(
+                                snap: (snapshot.data! as dynamic).docs[index],
                               ),
-                            ),
-                            title: Text((snapshot.data! as dynamic).docs[index]
-                                ['username']),
-                          ),
-                        );
-                      });
-                }
-              },
+                            );
+                          });
+                    }
+                  },
+                ),
+              ],
             ),
           );
   }

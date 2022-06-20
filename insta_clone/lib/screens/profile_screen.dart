@@ -78,53 +78,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
             appBar: AppBar(
               backgroundColor: mobileBgColor,
               title: Text(userData['username']),
+              centerTitle: true,
             ),
             body: ListView(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(children: [
-                    Row(
-                      children: [
-                        Container(
-                          height: kToolbarHeight * 1.5,
-                          width: kToolbarHeight * 1.5,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: CachedNetworkImageProvider(
-                                    userData['photoUrl'])),
-                          ),
-                        ),
-                        Expanded(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              buildStat(postCount, "Posts"),
-                              buildStat(followersCount, "Followers"),
-                              buildStat(followingCount, "Following"),
-                            ],
-                          ),
-                        )
-                      ],
+                    Container(
+                      height: kToolbarHeight * 1.5,
+                      width: kToolbarHeight * 1.5,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: CachedNetworkImageProvider(
+                                userData['photoUrl'])),
+                      ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(top: 5),
-                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.only(top: 10),
+                      alignment: Alignment.center,
                       child: Text(
                         userData['username'],
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(top: 5),
-                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.only(top: 5, bottom: 15),
+                      alignment: Alignment.center,
                       child: Text(
                         userData['bio'],
                         style: TextStyle(fontWeight: FontWeight.w300),
                       ),
+                    ),
+                    IntrinsicHeight(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          buildStat(postCount, "Posts"),
+                          VerticalDivider(
+                            color: mobilePColor,
+                          ),
+                          buildStat(followersCount, "Followers"),
+                          VerticalDivider(
+                            color: mobilePColor,
+                          ),
+                          buildStat(followingCount, "Following"),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -161,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         0.75,
                                   )
                                 : FollowButton(
-                                    bColor: blueColor,
+                                    bColor: purpleColor,
                                     bgColor: blueColor,
                                     text: "Follow",
                                     function: () async {
